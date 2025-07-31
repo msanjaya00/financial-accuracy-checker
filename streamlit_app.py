@@ -6,7 +6,7 @@ st.title("📊 Financial Statement Accuracy Checker")
 
 # Upload files
 gt_file = st.file_uploader("📥 Upload Ground Truth CSV", type="csv")
-extract_file = st.file_uploader("📥 Upload Extracted Excel File", type=["xlsx"])
+extract_file = st.file_uploader("📥 Upload Extracted File (Excel or CSV)", type=["xlsx", "csv"])
 
 # Helper functions (same as your original code)
 def normalize(field):
@@ -23,9 +23,13 @@ if gt_file and extract_file:
         # Load data
         gt_df = pd.read_csv(gt_file)
         
-        # Handle Excel file with multiple sheets (use first sheet like your code)
-        xls = pd.ExcelFile(extract_file)
-        df = xls.parse(xls.sheet_names[0])
+        # Handle both Excel and CSV files
+        if extract_file.name.endswith('.csv'):
+            df = pd.read_csv(extract_file)
+        else:
+            # Handle Excel file with multiple sheets (use first sheet like your code)
+            xls = pd.ExcelFile(extract_file)
+            df = xls.parse(xls.sheet_names[0])
         
         # Prepare Ground Truth data (following your exact logic)
         gt_long = gt_df.melt(id_vars=['Category','Field'], var_name='Year', value_name='Value_GT')
@@ -95,7 +99,7 @@ if gt_file and extract_file:
         - Field column  
         - Year columns (e.g., 2021, 2022, 2023)
         
-        **Extracted Excel should have:**
+        **Extracted file (Excel or CSV) should have:**
         - Field column
         - Year columns with data
         """)
@@ -113,7 +117,7 @@ else:
         Expenses,Operating Expenses,800000,850000,900000
         ```
         
-        **Extracted Excel:**
+        **Extracted Excel or CSV:**
         ```
         Field,2021,2022,2023
         Total Revenue Current Year,1000000,1050000,1200000
